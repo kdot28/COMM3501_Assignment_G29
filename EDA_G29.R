@@ -3,7 +3,7 @@
 # This code will be to conduct EDA as part of the major group assignment for COMM3501 #
                
 # Installing and loading packages
-package_list <- c("ggplot2", "dplyr", "tidyr", "janitor", "skimr")
+package_list <- c("ggplot2", "dplyr", "tidyr", "janitor", "skimr",  "corrplot", "lubridate")
 
 install.packages(package_list)
 
@@ -12,43 +12,124 @@ library(dplyr)
 library(tidyr)
 library(janitor)
 library(skimr)
+library(corrplot)
+library(lubridate)
 # Uploading the dataset
 original_data <- read.csv("A3_Dataset_2023.csv")
 
-# General data cleaning
+# General data cleaning - gets rid of the external ref column (the whole column was empty)
 original_data <- original_data %>%
   clean_names() %>%
   remove_empty(c("rows", "cols"))
 
-ggplot(data = original_data, aes(age_next)) + geom_bar()
-ggplot(data = original_data, aes(gender)) + geom_bar()
-ggplot(data = original_data, aes(smoker_status)) + geom_bar()
-ggplot(data = original_data, aes(home_state)) + geom_bar()
+# Converting all forms of missing data to NA - so that we are able to capture everything
+# It is recognised that the alternative column will have many missing entries since
+# advisers may not provide an alternative to every single client. Therefore, NA
+# will not be assigned to any missing values for the alternative variable.
 
+# This extracts all the column names except for alternative.
+NA_cols <- setdiff(names(original_data), "alternative")
 
-# understanding the data
+for (col in NA_cols) {
+  original_data[[col]][original_data[[col]] == ""] <- NA
+  original_data[[col]][original_data[[col]] == "unknown"] <- NA
+  original_data[[col]][original_data[[col]] == "N/A"] <- NA
+}
+
+# Checking - answer should be zero
+sum(is.na(original_data$alternative))
+
+# Summarising the dataset to attain better understanding of the data
 skim(original_data)
 
 
-# creating subset of NA's to see what we are missing and if it would be appropriate to remove NAs
-na_subset <- original_data[apply(
-  original_data, 
-  1, 
-  function(x) any(is.na(x))
-), ]
+# Checking for missing values
 
-ggplot(data = na_subset, aes(underwriter)) + geom_bar()
+missing_data <- colSums(is.na(original_data))
+print(missing_data)
+
+# Visualising the missing data to understand its impacts and make a decision
+# on imputation or removal.
+
+ggplot(data = gather(as.data.frame(is.na(original_data))), aes(x = key, fill = value)) + 
+  geom_bar() + 
+  labs(title = "Missing Data by Variables", x = "Variables", y = "Missing Count", fill = "Missing") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# dataset with the missing values
+ na_subset <- original_data[apply(
+   original_data, 
+   1, 
+   function(x) any(is.na(x))
+ ), ]
+ 
+# Quick plots to see if the distribution of the missing values tells us anything
+# e.g. if a certain underwriter has majority of the missing data
+ 
+ggplot(data = na_subset, aes(underwriter)) + geom_bar() 
+# NEOS Life has the most missing therefore further analysis.
+
+na_NEOS <- na_subset %>% filter(underwriter == "NEOS Life")
+na_NEOS[na_NEOS == 0] <- NA
+skim(na_NEOS)
+
+# Roughly 125, zero premiums, best to remove in my opinion as zero premiums don't make sense.
+
 ggplot(data = na_subset, aes(age_next)) + geom_bar()
 ggplot(data = na_subset, aes(gender)) + geom_bar()
 ggplot(data = na_subset, aes(smoker_status)) + geom_bar()
 ggplot(data = na_subset, aes(home_state)) + geom_bar()
+ 
+# Removing rows with missing data
+
+# Removing all missing data since they look like obvious data errors, with missing
+# life insurance providers, 0 premiums, missing adviser IDs, missing age, 
+# zero income with no information on employment.
+# Additionally, it constitutes approx 1.25% of the data, thus making no significant
+# impact to data quality and validity. - Link this back to Yadav, Roychaudhary (Handling Missing Values)
+
+# Outliers analysis - TBC
 
 
+# Final cleaned data - 
+# have not removed any unnecessary variables yet (rows removed 166775-164822 = 2080 (1.17%))
+cleaned_data <- na.omit(original_data)
 
-# Removing all missing data since they look like obvious data errors, with 0 premiums,
-# missing adviser IDs, missing age, zero income with no information on employment.
-# Additionally, it constitutes approx 1.1% of the data, thus making no significant
-# impact to data quality and validity.
+skim(cleaned_data)
 
-original_data <- na.omit(original_data)
+# converting variables into their relevant types before analysis.
+cleaned_data$date <- dmy(cleaned_data$date)
+cleaned_data$home_state <- as.factor(cleaned_data$home_state)
+cleaned_data$occupation <- as.factor(cleaned_data$occupation)
+
+ggplot(data = cleaned_data, aes(x = underwriter)) + 
+  geom_bar(fill = "dark cyan", colour = "black") + labs(title = "Underwriters Distribution") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggplot(data = cleaned_data, aes(x = age_next)) + 
+  geom_histogram(binwidth = 1, fill = "dark cyan", color = "black") + labs(title = "Age Distribution")
+
+ggplot(data = cleaned_data, aes(x = gender)) + 
+  geom_bar(fill = "dark cyan", color = "black") + labs(title = "Gender Distribution")
+
+ggplot(data = cleaned_data, aes(x = smoker_status)) + 
+  geom_bar(fill = "dark cyan", color = "black") + labs(title = "Smoker Status Distribution")
+
+ggplot(data = cleaned_data, aes(x = home_state)) + 
+  geom_bar(fill = cleaned_data$home_state) + labs(title = "Home State Distribution")
+
+ggplot(data = cleaned_data, aes(x = annualised_premium)) + 
+  geom_histogram(binwidth = 50, fill = "dark cyan", color = "dark cyan") + labs(title = "Annualised Premium Distribution")
+
+ggplot(data = cleaned_data, aes(x = annual_income)) + 
+  geom_histogram(binwidth = 10000, fill = "dark cyan", color = "dark cyan") + labs(title = "Annual Income Distribution")
+
+ggplot(data = cleaned_data, aes(x = super)) + 
+  geom_bar(fill = "dark cyan", color = "black") + labs(title = "Super Yes/No Distribution")
+
+# Visualizing relationships between key variables
+ggplot(data = cleaned_data, aes(x = age_next, y = premium, color = gender)) + geom_point() + labs(title = "Age vs Premium by Gender")
+ggplot(data = cleaned_data, aes(x = age_next, y = premium, color = smoker_status)) + geom_point() + labs(title = "Age vs Premium by Smoker Status")
+ggplot(data = cleaned_data, aes(x = annual_income, y = premium, color = gender)) + geom_point() + labs(title = "Annual Income vs Premium by Gender")
+ggplot(data = cleaned_data, aes(x = annual_income, y = premium, color = smoker_status)) + geom_point() + labs(title = "Annual Income vs Premium by Smoker Status")
 
