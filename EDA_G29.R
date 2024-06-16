@@ -102,6 +102,8 @@ cleaned_data$date <- dmy(cleaned_data$date)
 cleaned_data$home_state <- as.factor(cleaned_data$home_state)
 cleaned_data$occupation <- as.factor(cleaned_data$occupation)
 
+# Some visualisations
+
 ggplot(data = cleaned_data, aes(x = underwriter)) + 
   geom_bar(fill = "dark cyan", colour = "black") + labs(title = "Underwriters Distribution") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -127,7 +129,8 @@ ggplot(data = cleaned_data, aes(x = annual_income)) +
 ggplot(data = cleaned_data, aes(x = super)) + 
   geom_bar(fill = "dark cyan", color = "black") + labs(title = "Super Yes/No Distribution")
 
-# Visualizing relationships between key variables
+
+# Visualizing relationships between key variables - likely a better way to do this tbh
 ggplot(data = cleaned_data, aes(x = age_next, y = premium, color = gender)) + geom_point() + labs(title = "Age vs Premium by Gender")
 ggplot(data = cleaned_data, aes(x = age_next, y = premium, color = smoker_status)) + geom_point() + labs(title = "Age vs Premium by Smoker Status")
 ggplot(data = cleaned_data, aes(x = annual_income, y = premium, color = gender)) + geom_point() + labs(title = "Annual Income vs Premium by Gender")
