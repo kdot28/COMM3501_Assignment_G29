@@ -90,10 +90,12 @@ ggplot(data = na_subset, aes(home_state)) + geom_bar()
 # Removing rows with missing data
 
 # Removing all missing data since they look like obvious data errors, with missing
-# life insurance providers, 0 premiums, missing adviser IDs, missing age, 
+# life insurance providers, zero premiums, missing adviser IDs, missing age, 
 # zero income with no information on employment.
 # Additionally, it constitutes approx 1.25% of the data, thus making no significant
 # impact to data quality and validity. - Link this back to Yadav, Roychaudhary (Handling Missing Values)
+# data was checked if imputation would be reasonable - not at this moment, since we believe
+# it is not worth the computational effort for just 1.25% of the data.
 
 
 
@@ -102,13 +104,13 @@ ggplot(data = na_subset, aes(home_state)) + geom_bar()
 cleaned_data <- na.omit(original_data)
 
 # removing variables which are expected to be not used
-Variablesremove <- c(-Time, -Alternative, -RecommendationId, -RequestId, -LifeId, Premium)
 cleaned_data <- cleaned_data %>% select(c(-time, -alternative, -recommendation_id,
                                           -request_id, -life_id, -premium))
 
 skim(cleaned_data)
 
 # annual income = -1 -> set annual income to be greater than or equal to 0.
+# removes 164822 - 164622 = 200 rows of data. 
 cleaned_data <- cleaned_data %>% filter(annual_income >=0)
 
 # Outliers analysis
@@ -238,9 +240,37 @@ ggplot(data = cleaned_data_v3, aes(x = super)) +
   geom_bar(fill = "#69b3a2", color = "black") + labs(title = "Policies split by super")
 
 
+# multivariate plots
+Non_smoke <- cleaned_data_v3%>%
+  filter(smoker_status=="Non-Smoker")
+
+smoke <- cleaned_data_v3%>%
+  filter(smoker_status!="Non-Smoker")
+
+Non_smoke2 <- data.frame(length=(Non_smoke$age_next))
+smoke2 <- data.frame(length=(smoke$age_next))
+
+Non_smoke2$smoke <- "Non-Smoker"
+smoke2$smoke <- "Smoker"
+
+Lengths <- rbind(Non_smoke2,smoke2)
+
+ggplot(Lengths, aes(length, fill = smoke)) + 
+  geom_histogram(aes(y = ..density..), color="#e9ecef", alpha=0.6, position = 'identity',bins = 50) +
+  scale_fill_manual(values=c("#404080","#69b3a2"))+
+  labs(title = "Barplot of Real Wage in 2014 Grouped By Treatments", y="Density", fill = "",
+       x="Real Wage in 2014")
+
+ggplot(Lengths, aes(length, fill = smoke)) + 
+  geom_density(color="#e9ecef", alpha=0.6, position = 'identity',bins = 50) +
+  scale_fill_manual(values=c("#404080","#69b3a2"))+
+  labs(title = "Barplot of Real Wage in 2014 Grouped By Treatments", y="Density", fill = "",
+       x="Real Wage in 2014")
+
 # Visualizing relationships between key variables - likely a better way to do this tbh
 ggplot(data = cleaned_data, aes(x = age_next, y = premium, color = gender)) + geom_point() + labs(title = "Age vs Premium by Gender")
 ggplot(data = cleaned_data, aes(x = age_next, y = premium, color = smoker_status)) + geom_point() + labs(title = "Age vs Premium by Smoker Status")
 ggplot(data = cleaned_data, aes(x = annual_income, y = premium, color = gender)) + geom_point() + labs(title = "Annual Income vs Premium by Gender")
 ggplot(data = cleaned_data, aes(x = annual_income, y = premium, color = smoker_status)) + geom_point() + labs(title = "Annual Income vs Premium by Smoker Status")
 
+# 
