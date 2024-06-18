@@ -1,10 +1,11 @@
                #### Exploratory Data Analysis - Team 29 ####
 
+options(scipen = 999)
 # This code will be to conduct EDA as part of the major group assignment for COMM3501 #
                
 # Installing and loading packages
 package_list <- c("ggplot2", "dplyr", "tidyr", "janitor", "skimr",  "corrplot",
-                  "lubridate", "forcats", "VIM", "Outliers")
+                  "lubridate", "forcats", "VIM", "Outliers", "hexbin")
 
 install.packages(package_list)
 
@@ -18,6 +19,7 @@ library(lubridate)
 library(forcats)
 library(VIM)
 library(outliers)
+library(hexbin)
 # Uploading the dataset
 original_data <- read.csv("A3_Dataset_2023.csv")
 
@@ -163,9 +165,14 @@ cleaned_data_v2 <- cleaned_data %>%
 z_threshold <- 4 
 
 # Filter out rows with z-scores beyond the threshold
+# removes 164622 - 162836 = 1786 rows of data.
 cleaned_data_v3 <- cleaned_data_v2 %>%
   filter(abs(z_annualised_premium) <= z_threshold, abs(z_annual_income) <= z_threshold,
          abs(z_age_next) <= z_threshold)
+
+# new age range = 14 to 76
+# new annualised premium range = 0 to 23,493.56
+# new annual income range = 0 to 1,350,586
 
 # Drop the z-score columns
 cleaned_data_v3 <- cleaned_data_v3 %>%
@@ -234,10 +241,33 @@ ggplot(data = cleaned_data_v3, aes(x = smoker_status)) +
   geom_bar(fill = "#69b3a2", color = "black") + labs(title = "Policies split by Smoking Status")
 # Split by home state
 ggplot(data = cleaned_data_v3, aes(x = home_state)) + 
-  geom_bar(fill = cleaned_data$home_state) + labs(title = "Policies split by Home State")
+  geom_bar(fill = "#69b3a2", color = "black") + labs(title = "Policies split by Home State")
 # Split by super yes/no
 ggplot(data = cleaned_data_v3, aes(x = super)) + 
   geom_bar(fill = "#69b3a2", color = "black") + labs(title = "Policies split by super")
+
+
+# Visualizing relationships between key variables - likely a better way to do this tbh
+ggplot(data = cleaned_data_v3, aes(x = annualised_premium, fill = gender)) +
+  geom_density(alpha = 0.6) +
+  labs(title = "Density of Annualised Premium by Gender")
+
+ggplot(data = cleaned_data_v3, aes(x = annualised_premium, fill = smoker_status)) +
+  geom_density(alpha = 0.6) +
+  labs(title = "Density of Annualised Premium by Smoker Status")
+
+ggplot(data = cleaned_data_v3, aes(x = annual_income, y = annualised_premium)) +
+  geom_hex(bins = 30) +
+  scale_fill_continuous(type = "viridis") +
+  facet_wrap(~ gender) +
+  labs(title = "Annual Income vs Annualised Premium by Gender (Hexbin)")
+
+ggplot(data = cleaned_data_v3, aes(x = annual_income, y = annualised_premium)) +
+  geom_hex(bins = 30) +
+  scale_fill_continuous(type = "viridis") +
+  facet_wrap(~ smoker_status) +
+  labs(title = "Annual Income vs Annualised Premium by Smoker Status (Hexbin)")
+# --------------- EDA Finished (for speech) -------------- #
 
 
 # multivariate plots
@@ -267,10 +297,7 @@ ggplot(Lengths, aes(length, fill = smoke)) +
   labs(title = "Barplot of Real Wage in 2014 Grouped By Treatments", y="Density", fill = "",
        x="Real Wage in 2014")
 
-# Visualizing relationships between key variables - likely a better way to do this tbh
-ggplot(data = cleaned_data, aes(x = age_next, y = premium, color = gender)) + geom_point() + labs(title = "Age vs Premium by Gender")
-ggplot(data = cleaned_data, aes(x = age_next, y = premium, color = smoker_status)) + geom_point() + labs(title = "Age vs Premium by Smoker Status")
-ggplot(data = cleaned_data, aes(x = annual_income, y = premium, color = gender)) + geom_point() + labs(title = "Annual Income vs Premium by Gender")
-ggplot(data = cleaned_data, aes(x = annual_income, y = premium, color = smoker_status)) + geom_point() + labs(title = "Annual Income vs Premium by Smoker Status")
 
-# 
+# P/H's with zero income
+zero_income <- cleaned_data %>% filter(annual_income == 0)
+zero_income_freq <- data.frame(tabyl(zero_income$occupation))
