@@ -261,15 +261,14 @@ ggplot(data = cleaned_data_v3, aes(x = annual_income, y = annualised_premium)) +
   geom_hex(bins = 30) +
   scale_fill_continuous(type = "viridis") +
   facet_wrap(~ gender) +
-  labs(title = "Annual Income vs Annualised Premium by Gender (Hexbin)")
+  labs(title = "Annual Income vs Annualised Premium by Gender")
 
 ggplot(data = cleaned_data_v3, aes(x = annual_income, y = annualised_premium)) +
   geom_hex(bins = 30) +
   scale_fill_continuous(type = "viridis") +
   facet_wrap(~ smoker_status) +
-  labs(title = "Annual Income vs Annualised Premium by Smoker Status (Hexbin)")
+  labs(title = "Annual Income vs Annualised Premium by Smoker Status")
 # --------------- EDA Finished (for speech) -------------- #
-
 
 # multivariate plots
 Non_smoke <- cleaned_data_v3%>%
