@@ -56,8 +56,11 @@ print(missing_data)
 # on imputation or removal.
 
 # Decide on one graph to use
-aggr(original_data, col = c('#404080', '#69b3a2'), numbers = TRUE, sortVars = TRUE, 
-     labels = names(original_data), cex.axis = 0.4, gap = 3, ylab = c("Missing data", "Pattern"))
+aggr(original_data, col = c('#404080', '#69b3a2'), numbers = TRUE, sortVars = TRUE, sortCombs = TRUE, Plot = TRUE,
+     labels = names(original_data), cex.axis = 0.4, gap = 3, ylab = c("Missing data Proportion", "Pattern"))
+
+
+
 
 ggplot(data = gather(as.data.frame(is.na(original_data))), aes(x = key, fill = value)) + 
   geom_bar() + 
