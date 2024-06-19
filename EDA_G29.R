@@ -231,9 +231,18 @@ cleaned_data_v3$occupation <- as.factor(cleaned_data_v3$occupation)
 # extra-visualisations
 
 # Underwriters
-ggplot(data = cleaned_data_v3, aes(x = underwriter)) + 
-  geom_bar(fill = "#69b3a2", colour = "black") + labs(title = "Policies split by Underwriter") +
+ggplot(data = cleaned_data_v3 %>%
+         filter(underwriter %in% (cleaned_data_v3 %>%
+                                    count(underwriter) %>%
+                                    top_n(20, n) %>%
+                                    pull(underwriter))) %>%
+         mutate(underwriter = fct_reorder(underwriter, desc(table(underwriter)[underwriter]))),
+       aes(x = underwriter)) + 
+  geom_bar(fill = "#69b3a2", colour = "black") + 
+  coord_flip() + 
+  labs(title = "Policies split by Top 20 Underwriters", x = "Underwriter") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
 # Split by gender
 ggplot(data = cleaned_data_v3, aes(x = gender)) + 
   geom_bar(fill = "#69b3a2", color = "black") + labs(title = "Policies split by Gender")
