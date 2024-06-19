@@ -60,8 +60,6 @@ aggr(original_data, col = c('#404080', '#69b3a2'), numbers = TRUE, sortVars = TR
      labels = names(original_data), cex.axis = 0.4, gap = 3, ylab = c("Missing data Proportion", "Pattern"))
 
 
-
-
 ggplot(data = gather(as.data.frame(is.na(original_data))), aes(x = key, fill = value)) + 
   geom_bar() + 
   labs(title = "Missing Data by Variables", x = "Variables", y = "Missing Count", fill = "Missing") +
