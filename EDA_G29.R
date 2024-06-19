@@ -76,7 +76,7 @@ ggplot(data = gather(as.data.frame(is.na(original_data))), aes(x = key, fill = v
 # e.g. if a certain underwriter has majority of the missing data
  
 ggplot(data = na_subset, aes(underwriter)) + geom_bar() 
-# NEOS Life has the most missing therefore further analysis.
+# NEOS Life has the most missing therefore further analysis. (apart from the NAs)
 
 na_NEOS <- na_subset %>% filter(underwriter == "NEOS Life")
 na_NEOS[na_NEOS == 0] <- NA
@@ -102,7 +102,7 @@ ggplot(data = na_subset, aes(home_state)) + geom_bar()
 
 
 # Final cleaned data - 
-# have not removed any unnecessary variables yet (rows removed 166775-164822 = 2080 (1.17%))
+# have not removed any unnecessary variables yet (rows removed 166775-164822 = 2080 (1.25%))
 cleaned_data <- na.omit(original_data)
 
 # removing variables which are expected to be not used
@@ -179,7 +179,7 @@ cleaned_data_v3 <- cleaned_data_v3 %>%
   select(-z_annualised_premium, -z_annual_income, -z_age_next)
 
 # plotting histograms and density plots again
-# Boxplot for 'annualised_premium' - can clearly see outliers exist
+# Boxplot for 'annualised_premium' 
 ggplot(data = cleaned_data_v3, aes(y = annualised_premium)) + 
   geom_boxplot(fill = "#69b3a2") + 
   labs(title = "Boxplot of Annualised Premiums - excl Outliers", y = "Premium")
@@ -190,7 +190,7 @@ ggplot(cleaned_data_v3, aes(x=annualised_premium)) +
   labs(title="Distribution of Annualised Premiums - excl Outliers", x="Ansld Premiums", y="Density") +
   theme_minimal()
 
-# Boxplot for 'annual_income' - can clearly see outliers exist
+# Boxplot for 'annual_income'
 ggplot(data = cleaned_data_v3, aes(y = annual_income)) + 
   geom_boxplot(fill = "#69b3a2") + 
   labs(title = "Boxplot of Annual Income - excl Outliers", y = "Annual Income")
@@ -201,7 +201,7 @@ ggplot(cleaned_data_v3, aes(x=annual_income)) +
   labs(title="Distribution of Annual Income - excl Outliers", x="Annual Income", y="Density") +
   theme_minimal()
 
-# Boxplot for 'age_next' - can clearly see outliers exist
+# Boxplot for 'age_next' 
 ggplot(data = cleaned_data_v3, aes(y = age_next)) + 
   geom_boxplot(fill = "#69b3a2") + 
   labs(title = "Boxplot of Age Next - excl Outliers", y = "Age Next")
