@@ -228,6 +228,8 @@ cleaned_data_v3$date <- dmy(cleaned_data_v3$date)
 cleaned_data_v3$home_state <- as.factor(cleaned_data_v3$home_state)
 cleaned_data_v3$occupation <- as.factor(cleaned_data_v3$occupation)
 
+# Hello world
+
 # extra-visualisations
 
 # Underwriters
