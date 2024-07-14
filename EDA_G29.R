@@ -312,3 +312,8 @@ ggplot(Lengths, aes(length, fill = smoke)) +
 # P/H's with zero income
 zero_income <- cleaned_data %>% filter(annual_income == 0)
 zero_income_freq <- data.frame(tabyl(zero_income$occupation))
+
+
+
+
+
