@@ -313,7 +313,9 @@ ggplot(Lengths, aes(length, fill = smoke)) +
 zero_income <- cleaned_data %>% filter(annual_income == 0)
 zero_income_freq <- data.frame(tabyl(zero_income$occupation))
 
+# Saving the dataset into the repository
 
+write.csv(cleaned_data_v3, "modelling_data.csv")
 
 
 
