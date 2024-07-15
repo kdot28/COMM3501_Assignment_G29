@@ -30,8 +30,6 @@ library(klaR)
 # loading the dataset
 modelling_data <- read.csv("modelling_data.csv", T)
 
-#### Supervised Learning code - JERRY ####
-
 #### Unsupervised Learning - KARAN ####
 
 # removing variables that are likely not required
