@@ -107,8 +107,8 @@ ggplot(data = na_subset, aes(home_state)) + geom_bar()
 cleaned_data <- na.omit(original_data)
 
 # removing variables which are expected to be not used
-cleaned_data <- cleaned_data %>% select(c(-time, -alternative, -recommendation_id,
-                                          -request_id, -life_id, -premium))
+cleaned_data <- cleaned_data %>% dplyr::select(-time, -alternative, -recommendation_id,
+                                        -request_id, -life_id, -premium)
 
 skim(cleaned_data)
 
@@ -177,7 +177,7 @@ cleaned_data_v3 <- cleaned_data_v2 %>%
 
 # Drop the z-score columns
 cleaned_data_v3 <- cleaned_data_v3 %>%
-  select(-z_annualised_premium, -z_annual_income, -z_age_next)
+  dplyr::select(-z_annualised_premium, -z_annual_income, -z_age_next)
 
 # plotting histograms and density plots again
 # Boxplot for 'annualised_premium' 
@@ -223,12 +223,18 @@ cleaned_data_v3$occupation <- fct_lump(cleaned_data_v3$occupation, n = top_n_lev
 #double check the number of levels after cleaning
 nlevels(factor(cleaned_data_v3$occupation))
 
+# keep the top 10 most frequent underwriters and turn other ones to other
+top_U_levels <- 10
+underwriter_freq <- table(cleaned_data_v3$underwriter)
+cleaned_data_v3$underwriter <- fct_lump(cleaned_data_v3$underwriter, n = top_U_levels, other_level = "Other")
+#double check the number of levels after cleaning
+nlevels(factor(cleaned_data_v3$underwriter))
+
 # converting variables into their relevant types before analysis.
 cleaned_data_v3$date <- dmy(cleaned_data_v3$date)
 cleaned_data_v3$home_state <- as.factor(cleaned_data_v3$home_state)
 cleaned_data_v3$occupation <- as.factor(cleaned_data_v3$occupation)
 
-# Hello world
 
 # extra-visualisations
 
@@ -236,13 +242,13 @@ cleaned_data_v3$occupation <- as.factor(cleaned_data_v3$occupation)
 ggplot(data = cleaned_data_v3 %>%
          filter(underwriter %in% (cleaned_data_v3 %>%
                                     count(underwriter) %>%
-                                    top_n(20, n) %>%
+                                    top_n(10, n) %>%
                                     pull(underwriter))) %>%
          mutate(underwriter = fct_reorder(underwriter, desc(table(underwriter)[underwriter]))),
        aes(x = underwriter)) + 
   geom_bar(fill = "#69b3a2", colour = "black") + 
   coord_flip() + 
-  labs(title = "Policies split by Top 20 Underwriters", x = "Underwriter") +
+  labs(title = "Policies split by Top 10 Underwriters", x = "Underwriter") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 # Split by gender
@@ -281,41 +287,13 @@ ggplot(data = cleaned_data_v3, aes(x = annual_income, y = annualised_premium)) +
   labs(title = "Annual Income vs Annualised Premium by Smoker Status")
 # --------------- EDA Finished (for speech) -------------- #
 
-# multivariate plots
-Non_smoke <- cleaned_data_v3%>%
-  filter(smoker_status=="Non-Smoker")
-
-smoke <- cleaned_data_v3%>%
-  filter(smoker_status!="Non-Smoker")
-
-Non_smoke2 <- data.frame(length=(Non_smoke$age_next))
-smoke2 <- data.frame(length=(smoke$age_next))
-
-Non_smoke2$smoke <- "Non-Smoker"
-smoke2$smoke <- "Smoker"
-
-Lengths <- rbind(Non_smoke2,smoke2)
-
-ggplot(Lengths, aes(length, fill = smoke)) + 
-  geom_histogram(aes(y = ..density..), color="#e9ecef", alpha=0.6, position = 'identity',bins = 50) +
-  scale_fill_manual(values=c("#404080","#69b3a2"))+
-  labs(title = "Barplot of Real Wage in 2014 Grouped By Treatments", y="Density", fill = "",
-       x="Real Wage in 2014")
-
-ggplot(Lengths, aes(length, fill = smoke)) + 
-  geom_density(color="#e9ecef", alpha=0.6, position = 'identity',bins = 50) +
-  scale_fill_manual(values=c("#404080","#69b3a2"))+
-  labs(title = "Barplot of Real Wage in 2014 Grouped By Treatments", y="Density", fill = "",
-       x="Real Wage in 2014")
-
-
 # P/H's with zero income
 zero_income <- cleaned_data %>% filter(annual_income == 0)
 zero_income_freq <- data.frame(tabyl(zero_income$occupation))
 
-# Saving the dataset into the repository
 
-write.csv(cleaned_data_v3, "modelling_data.csv")
+# Saving the dataset into the repository
+write.csv(cleaned_data_v3, "cleaned_data_v3")
 
 
 
