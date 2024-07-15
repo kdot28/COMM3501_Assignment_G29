@@ -28,7 +28,7 @@ library(arulesViz)
 library(klaR)
 
 # loading the dataset
-modelling_data <- read.csv("modelling_data.csv", T)
+modelling_data <- read.csv("cleaned_data_v3", T)
 
 #### Unsupervised Learning - KARAN ####
 

@@ -6,9 +6,9 @@ FunLabelEncoder_factor <- function(df) {
   }
   return(df)
 }
+modelling_data <- read.csv("cleaned_data_v3", T)
 
-
-data_factor <- FunLabelEncoder_factor(cleaned_data_v3)
+data_factor <- FunLabelEncoder_factor(modelling_data)
 data_factor <- data_factor[ , !(names(data_factor) %in% c("date","underwriter",
                                                           "commission_structure",
                                                           "adviser_id","be","severity",
@@ -123,7 +123,7 @@ FunLabelEncoder_factor <- function(df) {
   return(df)
 }
 
-data_knn <- cleaned_data_v3
+data_knn <- modelling_data
 data_knn <- data_knn[ , !(names(data_knn) %in% c("date","underwriter",
                                                  "commission_structure",
                                                  "adviser_id","be","severity",
