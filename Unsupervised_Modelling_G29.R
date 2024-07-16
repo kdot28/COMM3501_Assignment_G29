@@ -120,5 +120,8 @@ ggplot(model, aes(x = occupation, y = annual_income , color = model_df)) +
   labs(title = "Occupation ~ Annualised Income",
        x = "Occupation", y = "Annualised Income") + guides(color = guide_legend(title = "Cluster")) +
   theme(axis.text.x = element_text(angle = 90))
+
 #### Associate Rules Analysis ####
+
+## this is to figure out what products should be packaged together (emphasis in class)
 
