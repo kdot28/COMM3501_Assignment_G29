@@ -247,3 +247,34 @@ ggplot(melt(product_penetration, id.vars = c("underwriter", "Cluster")), aes(x =
 
 ## this is to figure out what products should be packaged together (emphasis in class)
 
+product_data_ARA <- modelling_data_1[c("life", "ip", "tpd", "trauma")]
+
+# Convert to transactions
+product_transaction_ARA <- as(product_data_ARA, "transactions")
+
+# Generate rules -> starting with high support and confidence so we initially
+# detect stronger and more obvious relationships. minimum length = 2 is default.
+rules <- apriori(product_transaction_ARA, parameter = list(supp = 0.19, conf = 0.8, minlen = 2))
+
+# Inspect rules
+srules <- sort(rules, by = 'lift', decreasing= T)
+inspect(srules)
+
+# focus from row 12 onwards?
+
+# Generate a scatter plot for support vs confidence
+plot(rules, measure=c("support", "confidence"), shading="lift")
+
+# Generate a grouped matrix plot
+plot(rules, method="grouped")
+
+# Generate a graph-based visualization
+plot(rules, method="graph")
+
+# Generate a parallel coordinate plot
+plot(rules, method="paracoord")
+
+# Generate a heatmap (for smaller sets of rules due to readability)
+if (length(rules) <= 20) {  # Adjust this based on your specific needs
+  plot(rules, method="heatmap")
+}
