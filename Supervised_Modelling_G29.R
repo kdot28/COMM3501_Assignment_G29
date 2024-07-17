@@ -21,7 +21,7 @@ data_factor <- data_factor[ , !(names(data_factor) %in% c("date","underwriter",
                                                           "package"))]
 str(data_factor)
 
-#Separating the data into Train and Test sets
+#Separating the data into Train and Test sets for the different products
 library(caret)
 library(pROC)
 library(glmnet)

@@ -139,23 +139,6 @@ ggplot(modelling_data_1, aes(x = as.factor(Cluster), y = annual_income, fill = a
        y = "Annual Income (Scaled)",
        fill = "Cluster")
 
-# Proportions of trauma insurance coverage by underwriter and cluster
-trauma_proportions <- modelling_data_1 %>%
-  group_by(underwriter, Cluster, trauma) %>%
-  summarize(Count = n(), .groups = 'drop') %>%
-  group_by(underwriter, Cluster) %>%
-  mutate(Proportion = Count / sum(Count)) %>%
-  filter(trauma == "Yes")
-
-# Plot the proportions of trauma insurance coverage by underwriter and cluster
-ggplot(trauma_proportions, aes(x = underwriter, y = Proportion, fill = as.factor(Cluster))) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Proportion of Trauma Insurance Coverage by Underwriter and Cluster",
-       x = "Underwriter",
-       y = "Proportion",
-       fill = "Cluster") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
 # Calculate proportions of premium frequency by underwriter and cluster
 premium_freq_proportions <- modelling_data_1 %>%
   group_by(underwriter, Cluster, premium_frequency) %>%
@@ -188,11 +171,11 @@ ggplot(modelling_data_1, aes(x = underwriter, y = annual_income, fill = Cluster)
   labs(title = "Income Distribution by Underwriter and Cluster", x = "Underwriter", y = "Annual Income") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# Violin plot for Annualized Premium by Underwriter and Cluster
+# Violin plot for Annualised Premium by Underwriter and Cluster
 ggplot(modelling_data_1, aes(x = underwriter, y = annualised_premium, fill = Cluster)) +
   geom_violin() +
   facet_wrap(~ Cluster) +
-  labs(title = "Annualized Premium Distribution by Underwriter and Cluster", x = "Underwriter", y = "Annualized Premium") +
+  labs(title = "Annualised Premium Distribution by Underwriter and Cluster", x = "Underwriter", y = "Annualised Premium") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Scatter plot for Age and Annual Income by Underwriter and Cluster
@@ -202,13 +185,13 @@ ggplot(modelling_data_1, aes(x = age_next, y = annual_income, color = Cluster)) 
   labs(title = "Age vs Annual Income by Underwriter and Cluster", x = "Age", y = "Annual Income") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# Box plot for Annualized Premium by Underwriter and Smoker Status
+# Box plot for Annualised Premium by Underwriter and Smoker Status
 ggplot(modelling_data_1, aes(x = underwriter, y = annualised_premium, fill = smoker_status)) +
   geom_boxplot() +
-  labs(title = "Annualized Premium by Underwriter and Smoker Status", x = "Underwriter", y = "Annualized Premium") +
+  labs(title = "Annualised Premium by Underwriter and Smoker Status", x = "Underwriter", y = "Annualised Premium") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# market share analysis based on clusters
+## market share analysis based on clusters
 # Calculate the number of policies by underwriter and cluster
 market_share_by_cluster <- modelling_data_1 %>%
   group_by(underwriter, Cluster) %>%
