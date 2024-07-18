@@ -40,7 +40,7 @@ modelling_data_1 <- modelling_data %>% dplyr::select(-X ,-date,-package, -commis
                                               -tpd_cover_amount, -trauma_cover_amount,-ip_cover_amount,
                                               -inside_super_premium, -be_cover_amount, -severity_cover_amount,
                                               -outside_super_premium, -adviser_id, -indexation_rate)
-## Changing categorical data to dummy data
+## Changing categorical data for modelling
 
 # changing into factors first
 modelling_data_1 <- modelling_data_1 %>%
@@ -50,7 +50,7 @@ modelling_data_1 <- modelling_data_1 %>%
 modelling_data_1 <- modelling_data_1 %>%
   mutate(across(where(is.numeric), scale))
 
-#### K-Prototypes clustering ####
+#### K-Prototypes clustering #### - instead of K-means (note to self - attach link to paper that suggested)
 set.seed(5)
 # since we want to decide on the number of clusters which minimises dispersion
 # within clusters, we will create a function that helps us do so.
@@ -256,8 +256,3 @@ plot(rules, method="graph")
 
 # Generate a parallel coordinate plot
 plot(rules, method="paracoord")
-
-# Generate a heatmap (for smaller sets of rules due to readability)
-if (length(rules) <= 20) {  # Adjust this based on your specific needs
-  plot(rules, method="heatmap")
-}
