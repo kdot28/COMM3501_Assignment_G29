@@ -242,13 +242,13 @@ cleaned_data_v3$occupation <- as.factor(cleaned_data_v3$occupation)
 ggplot(data = cleaned_data_v3 %>%
          filter(underwriter %in% (cleaned_data_v3 %>%
                                     count(underwriter) %>%
-                                    top_n(10, n) %>%
+                                    top_n(11, n) %>%
                                     pull(underwriter))) %>%
          mutate(underwriter = fct_reorder(underwriter, desc(table(underwriter)[underwriter]))),
        aes(x = underwriter)) + 
   geom_bar(fill = "#69b3a2", colour = "black") + 
   coord_flip() + 
-  labs(title = "Policies split by Top 10 Underwriters", x = "Underwriter") +
+  labs(title = "Policies split by Top 11 Underwriters (Grouped)", x = "Underwriter") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 # Split by gender
@@ -296,4 +296,15 @@ zero_income_freq <- data.frame(tabyl(zero_income$occupation))
 write.csv(cleaned_data_v3, "cleaned_data_v3")
 
 
+# --------------- EDA for final presentation -------------- #
+# Violin plot for age distribution by underwriter
+ggplot(cleaned_data_v3, aes(x = underwriter, y = age_next, fill = underwriter)) +
+  geom_violin() +
+  labs(title = "Age Distribution by Underwriter", x = "Underwriter", y = "Age") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+# Violin plot for Income distribution by Underwriter and Cluster
+ggplot(cleaned_data_v3, aes(x = underwriter, y = annual_income, fill = underwriter)) +
+  geom_violin() +
+  labs(title = "Income Distribution by Underwriter", x = "Underwriter", y = "Annual Income") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
