@@ -289,6 +289,7 @@ print(paste("AUC:", auc(roc_knn_ip)))
 
 ################################################################################
 library(randomForest)
+library(pdp)
 #random forest
 #life
 random_forest_life<-randomForest(life~.,data = train_life,ntree=100,importance=TRUE)
@@ -305,6 +306,10 @@ confusionMatrix(predicted_classes_life, test_life$life, positive = "Yes")
 
 roc_randomforest_life <- roc(test_life$life, as.numeric(predicted_classes_life == "Yes"))
 auc(roc_randomforest_life)
+
+# pdps - non technical audience - likely not useful!
+partialPlot(random_forest_life, train_life, age_next)
+partialPlot(random_forest_life, train_life, annual_income)
 
 #trauma
 random_forest_trauma<-randomForest(trauma~.,data = train_trauma,ntree=100,importance=TRUE)
